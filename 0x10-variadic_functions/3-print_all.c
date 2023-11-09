@@ -1,87 +1,50 @@
 #include "variadic_functions.h"
+#include <stdarg.h>
+#include <stdio.h>
 
 /**
- * printc - prints character.
- * @pa: The Input data.
- * Return: Nothing.
- */
-void printc(va_list pa)
-{
-printf("%c", va_arg(pa, int));
-}
-
-/**
- * printin - print int
- * @pa: inputs data.
- * Return: Nothing.
- */
-void printin(va_list pa)
-{
-printf("%d", va_arg(pa, int));
-}
-/**
- * printfl - prints float
- * @pa: Inputs data.
- * Return: Nothing.
- */
-
-void printfl(va_list pa)
-{
-printf("%f", va_arg(pa, double));
-}
-
-/**
- * prints - prints string
- * @pa: Inputs data.
- * Return: Nothing.
- */
-void prints(va_list pa)
-{
-char *str = va_arg(pa, char *);
-
-if (str == NULL)
-{
-printf("(nil)");
-return;
-}
-printf("%s", str);
-}
-
-/**
- * print_all - prints all inputs
- * @format: Different types of data.
- * Return: Nothing.
+ * print_all - print anything
+ * @format: list of types of arguments to be passed to the function
  */
 void print_all(const char * const format, ...)
 {
-va_list pa;
-int i, y;
-char *separa = "";
-tstruc drive[] =  {
-{"c", printc},
-{"i", printin},
-{"f", printfl},
-{"s", prints},
-{NULL, NULL}
-};
-y = 0;
-va_start(pa, format);
-while (format && format[y])
-{
-i = 0;
-while (i < 4)
-{
-if (format[y] == *drive[i].q)
-{
-printf("%s", separa);
-drive[i].u(pa);
-separa = ", ";
-}
-i++;
-}
-y++;
-}
-printf("\n");
-va_end(pa);
-}
+	int i = 0;
+	char *str, *sep = "";
 
+	va_list list;
+
+	va_start(list, format);
+
+	if (format)
+	{
+		while (format[i])
+		{
+			switch (format[i])
+			{
+				case 'c':
+					printf("%s%c", sep, va_arg(list, int));
+					break;
+				case 'i':
+					printf("%s%d", sep, va_arg(list, int));
+					break;
+				case 'f':
+					printf("%s%f", sep, va_arg(list, double));
+					break;
+				case 's':
+					str = va_arg(list, char *);
+					if (!str)
+						str = "(nil)";
+					printf("%s%s", sep, str);
+					break;
+				default:
+					i++;
+					continue;
+			}
+			sep = ", ";
+			i++;
+		}
+	}
+
+	printf("\n");
+	va_end(list);
+}
